@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Button, ButtonGroup } from 'react-bootstrap'
 import { FaGoogle, FaGithub, FaFacebook, FaTwitter, FaWhatsapp, FaInstagram, FaLinkedin } from "react-icons/fa";
 import ListGroup from 'react-bootstrap/ListGroup';
@@ -6,11 +6,23 @@ import Carousel from 'react-bootstrap/Carousel';
 import logo1 from '../../image/brand-1.png'
 import logo2 from '../../image/brand2.jpg'
 import logo3 from '../../image/brand-3.jpg'
+import { AuthContext } from '../../context/UserContext/UserContext';
 const RightNav = () => {
+    const {loginUserWithGoogle} = useContext(AuthContext)
+    const handleGoogleLogin = () =>{
+        loginUserWithGoogle()
+        .then(res =>{
+            const user = res.user
+            console.log(user)
+        })
+        .catch(error =>{
+            console.error(error)
+        })
+    }
     return (
         <div>
             <ButtonGroup vertical>
-                <Button variant="outline-primary"><FaGoogle></FaGoogle> Login with Google</Button>
+                <Button onClick={handleGoogleLogin} variant="outline-primary"><FaGoogle></FaGoogle> Login with Google</Button>
                 <Button variant="outline-danger"><FaGithub></FaGithub> Login with Github</Button>
             </ButtonGroup>
             <div className='mt-4'>
@@ -55,7 +67,6 @@ const RightNav = () => {
                             src={logo3}
                             alt="Third slide"
                         />
-
                         <Carousel.Caption>
                         </Carousel.Caption>
                     </Carousel.Item>
