@@ -6,6 +6,8 @@ import LeftNav from '../LeftNav/LeftNav';
 import { Link } from 'react-router-dom'
 import { AuthContext } from '../../context/UserContext/UserContext';
 import { Button } from 'react-bootstrap';
+import Image from 'react-bootstrap/Image'
+import { FaUserAlt } from 'react-icons/fa';
 const Header = () => {
     const { user, logOut } = useContext(AuthContext)
 
@@ -33,12 +35,27 @@ const Header = () => {
                             <Nav.Link><Link to={'/register'}>Register</Link> </Nav.Link>
                         </Nav>
                         {
-                            user?.displayName &&
+                            (user?.displayName || user?.email) &&
                             <Nav>
                                 <Nav.Link>
-                                    Welcome, {user?.displayName}
+                                    Welcome, {user?.displayName ? user?.displayName : user?.email}
                                 </Nav.Link>
-                                <Button variant="outline-secondary" onClick={handleLogout}>
+
+                                <>
+                                    {
+                                        user?.photoURL ?
+                                            <Image
+                                                roundedCircle
+                                                src={user?.photoURL}
+                                                style={{ height: '40px', width: '40px' }}
+                                                ></Image>
+                                            :
+                                            <FaUserAlt
+                                            style={{ height: '40px', width: '40px',borderRadius:'50%' }}
+                                            ></FaUserAlt>
+                                    }
+                                </>
+                                <Button className='ms-2' variant="outline-secondary" onClick={handleLogout}>
                                     Logout
                                 </Button>
                             </Nav>

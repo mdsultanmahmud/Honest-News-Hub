@@ -1,11 +1,15 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/UserContext/UserContext';
 
 const Login = () => {
-    const { Login } = useContext(AuthContext)
+    const [errorMsg, setErrorMsg] = useState('fill the form properly!!!')
+    const { Login, setLoader } = useContext(AuthContext)
+    const location = useLocation()
+    const from = location?.state?.from?.pathname || '/'
     const navigate = useNavigate()
     const handleLogin = event => {
         event.preventDefault()
@@ -13,13 +17,25 @@ const Login = () => {
         const email = form.email.value
         const password = form.password.value
         Login(email, password)
-        .then(res =>{
-            const user = res.user 
-            console.log(user)
-            form.reset()
-            navigate('/')
-        })
-        .catch(error =>console.log(error))
+            .then(res => {
+                const user = res.user
+                console.log(user)
+                form.reset()             
+                setErrorMsg('')
+                if(user.emailVerified){
+                    navigate(from, {replace: true})
+                }else{
+                    toast.error('Your email is not verified. Please verify your email address before login!!')
+                }
+                
+            })
+            .catch(error => {
+                console.error(error)
+                setErrorMsg(error.message)
+            })
+            .finally(() =>{
+                setLoader(false)
+            })
     }
     return (
         <Form onSubmit={handleLogin}>
@@ -34,7 +50,7 @@ const Login = () => {
             </Form.Group>
             <Form.Group className="mb-3" controlId="formBasicCheckbox">
                 <Form.Text className="text-danger">
-                    We'll never share your email with anyone else.
+                    {errorMsg}
                 </Form.Text>
             </Form.Group>
 

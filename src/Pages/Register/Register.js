@@ -1,38 +1,60 @@
 import React, { useContext, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import toast from 'react-hot-toast';
 import { AuthContext } from '../../context/UserContext/UserContext';
 const Register = () => {
-    const {createUser, GetName} = useContext(AuthContext)
+    const [acceptedTerms, setAcceptedTerms] = useState(false)
+    const { createUser, GetName,verifyEmail } = useContext(AuthContext)
     const [errorMsg, setErrorMsg] = useState('fill the form properly')
 
     const handleRegister = event => {
         event.preventDefault()
-        const form = event.target 
-        const name = form.name.value 
-        const email = form.email.value 
-        const password = form.password.value 
-        const conpass = form.conpass.value 
-        
-        if(password !== conpass){
+        const form = event.target
+        const name = form.name.value
+        const email = form.email.value
+        const password = form.password.value
+        const conpass = form.conpass.value
+        const photo = form.photourl.value
+        console.log(photo)
+        const profile = {
+            displayName : name,
+            photoURL: photo
+        }
+        if (password !== conpass) {
             setErrorMsg('Password is not matched!!')
+            return
         }
 
         createUser(email, password)
-        .then(res =>{
-            const user = res.user 
-            console.log(user)
-            form.reset()
-        })
-        .catch(error => console.error(error))
+            .then(res => {
+                const user = res.user
+                console.log(user)
+                form.reset()
+                setErrorMsg('')
+                
+                GetName(profile)
+                .then(() =>{})
+                .catch(error => console.error(error))
+                verifyEmail()
+                .then(() =>{})
+                .catch(e => console.error(e))
+                toast.success('We sent a verification code in your email. Please verify your email.')
+            })
+            .catch(error => {
+                console.error(error)
+                setErrorMsg(error.message)
+            })
+
+    }
 
 
-        GetName(name)
-        .then(res =>{
-            ///
-        })
-        .catch(e => console.error(e))
-
+    const handleTermsAndCondition = event =>{
+        if(event.target.checked){
+            setAcceptedTerms(true)
+        }else{
+            setAcceptedTerms(false)
+        }
     }
 
     return (
@@ -40,6 +62,10 @@ const Register = () => {
             <Form.Group className="mb-3" controlId="formBasicEmail">
                 <Form.Label>Your Name</Form.Label>
                 <Form.Control name='name' type="text" placeholder="Your Name" required />
+            </Form.Group>
+            <Form.Group className="mb-3" >
+                <Form.Label>Your PhotoURL</Form.Label>
+                <Form.Control name='photourl' type="text" placeholder="Your PhotoURL" required />
             </Form.Group>
 
             <Form.Group className="mb-3" controlId='email'>
@@ -54,13 +80,16 @@ const Register = () => {
 
             <Form.Group className="mb-3">
                 <Form.Label>Confirm Password</Form.Label>
-                <Form.Control  name='conpass' type="password" placeholder="conform Password" required />
+                <Form.Control name='conpass' type="password" placeholder="conform Password" required />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="formBasicCheckbox">
+                <Form.Check onClick={handleTermsAndCondition} type="checkbox" label="Terms and Condition" />
             </Form.Group>
             <Form.Text className="text-danger">
                 {errorMsg}
             </Form.Text>
             <br />
-            <Button className='mt-3' variant="primary" type="submit">
+            <Button className='mt-3' variant="primary" type="submit" disabled = {!acceptedTerms}>
                 Register
             </Button>
         </Form>

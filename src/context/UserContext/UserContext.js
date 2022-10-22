@@ -1,44 +1,63 @@
 import React, { createContext, useEffect, useState } from 'react';
-import {createUserWithEmailAndPassword, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut, updateProfile} from 'firebase/auth'
+import { createUserWithEmailAndPassword, getAuth, GithubAuthProvider, GoogleAuthProvider, onAuthStateChanged, sendEmailVerification, signInWithEmailAndPassword, signInWithPopup, signOut, updateProfile } from 'firebase/auth'
 import app from '../../firebase/firebase.init';
 const auth = getAuth(app)
 export const AuthContext = createContext()
-const UserContext = ({children}) => {
+const UserContext = ({ children }) => {
     const [user, setUser] = useState(null)
-    const googleProvider = new GoogleAuthProvider()
+    const [loader, setLoader] = useState(true)
 
-    const loginUserWithGoogle = () =>{
+
+    const googleProvider = new GoogleAuthProvider()
+    const githubProvider = new GithubAuthProvider()
+    const loginUserWithGoogle = () => {
+        setLoader(true)
         return signInWithPopup(auth, googleProvider)
     }
-
-    const createUser = (email, password) =>{
-        return createUserWithEmailAndPassword(auth, email ,password)
+    const loginUserWithGithub = () => {
+        setLoader(true)
+        return signInWithPopup(auth, githubProvider)
     }
 
-    const Login = (email, password) =>{
-        return signInWithEmailAndPassword(auth, email , password)
+    const createUser = (email, password) => {
+        setLoader(true)
+        return createUserWithEmailAndPassword(auth, email, password)
     }
 
-    const GetName = (name) =>{
-        return updateProfile(auth.currentUser, {displayName: name})
+    const Login = (email, password) => {
+        setLoader(true)
+        return signInWithEmailAndPassword(auth, email, password)
     }
-    const logOut = () =>{
+    const verifyEmail = () => {
+        return sendEmailVerification(auth.currentUser)
+    }
+
+    const GetName = (userProfile) => {
+        return updateProfile(auth.currentUser, userProfile)
+    }
+    const logOut = () => {
+        setLoader(true)
         return signOut(auth)
     }
 
-    useEffect(() =>{
-       const unsubscribe = onAuthStateChanged(auth, (currentUser) =>{
-            if(currentUser){
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            if (currentUser === null || currentUser.emailVerified) {
                 setUser(currentUser)
+                setLoader(false)
                 console.log('state changed user: ', currentUser)
-            }else{
+            } else {
+                setLoader(false)
                 setUser({})
             }
         })
         return () => unsubscribe()
-    },[])
+    }, [])
 
-    const AuthInfo = {user, loginUserWithGoogle, logOut, createUser, Login, GetName}
+    const AuthInfo = {
+        user, loader, loginUserWithGoogle, logOut,
+        createUser, Login, GetName, loginUserWithGithub, verifyEmail, setLoader
+    }
     return (
         <AuthContext.Provider value={AuthInfo} >
             {children}

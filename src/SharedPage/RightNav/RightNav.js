@@ -8,22 +8,33 @@ import logo2 from '../../image/brand2.jpg'
 import logo3 from '../../image/brand-3.jpg'
 import { AuthContext } from '../../context/UserContext/UserContext';
 const RightNav = () => {
-    const {loginUserWithGoogle} = useContext(AuthContext)
-    const handleGoogleLogin = () =>{
+    const { loginUserWithGoogle, loginUserWithGithub } = useContext(AuthContext)
+    const handleGoogleLogin = () => {
         loginUserWithGoogle()
+            .then(res => {
+                const user = res.user
+                console.log(user)
+            })
+            .catch(error => {
+                console.error(error)
+            })
+    }
+
+
+    const handleGithubLogin = () => {
+        loginUserWithGithub()
         .then(res =>{
-            const user = res.user
+            const user = res.user 
             console.log(user)
         })
-        .catch(error =>{
-            console.error(error)
-        })
+        .catch(e => console.error(e))
     }
+
     return (
         <div>
             <ButtonGroup vertical>
                 <Button onClick={handleGoogleLogin} variant="outline-primary"><FaGoogle></FaGoogle> Login with Google</Button>
-                <Button variant="outline-danger"><FaGithub></FaGithub> Login with Github</Button>
+                <Button onClick={handleGithubLogin} variant="outline-danger"><FaGithub></FaGithub> Login with Github</Button>
             </ButtonGroup>
             <div className='mt-4'>
                 <h5>Also search...</h5>

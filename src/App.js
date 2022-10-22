@@ -1,3 +1,4 @@
+import { Toaster } from 'react-hot-toast';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import './App.css';
 import Main from './layout/Main';
@@ -6,6 +7,7 @@ import Home from './Pages/Home/Home';
 import Login from './Pages/Login/Login';
 import News from './Pages/News/News/News';
 import Register from './Pages/Register/Register';
+import SecretRoute from './route/SecretRoute';
 
 function App() {
   const router = createBrowserRouter([
@@ -21,11 +23,11 @@ function App() {
         {
           path:'/category/:categoryId',
           loader: ({params}) => fetch(`http://localhost:5000/category/${params.categoryId}`),
-          element:<Category></Category>
+          element:<SecretRoute><Category></Category></SecretRoute>
         },
         {
           path:'/news/:newsId',
-          element:<News></News>,
+          element:<SecretRoute><News></News></SecretRoute>,
           loader: ({params}) => fetch(`http://localhost:5000/news/${params.newsId}`)
         },
         {
@@ -42,6 +44,7 @@ function App() {
   return (
     <div>
       <RouterProvider router={router}></RouterProvider>
+      <Toaster></Toaster>
     </div>
   );
 }
