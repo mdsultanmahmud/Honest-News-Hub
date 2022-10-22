@@ -18,17 +18,17 @@ function App() {
         {
           path:'/',
           element:<Home></Home>,
-          loader: () => fetch('http://localhost:5000/news')
+          loader: () => fetch('https://honest-news-hub-server.vercel.app/news')
         },
-        {
+        { 
           path:'/category/:categoryId',
-          loader: ({params}) => fetch(`http://localhost:5000/category/${params.categoryId}`),
+          loader: ({params}) => fetch(`https://honest-news-hub-server.vercel.app/category/${params.categoryId}`),
           element:<SecretRoute><Category></Category></SecretRoute>
         },
         {
           path:'/news/:newsId',
           element:<SecretRoute><News></News></SecretRoute>,
-          loader: ({params}) => fetch(`http://localhost:5000/news/${params.newsId}`)
+          loader: ({params}) => fetch(`https://honest-news-hub-server.vercel.app/news/${params.newsId}`)
         },
         {
           path:'/login',
