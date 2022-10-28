@@ -1,12 +1,16 @@
 import React, { useContext, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import { Helmet } from 'react-helmet';
 import toast from 'react-hot-toast';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/UserContext/UserContext';
+import useTitle from '../../hooks/useTitle';
 
 const Login = () => {
     const [errorMsg, setErrorMsg] = useState('fill the form properly!!!')
+    //change title with own hooks 
+    useTitle('Login')
     const { Login, setLoader } = useContext(AuthContext)
     const location = useLocation()
     const from = location?.state?.from?.pathname || '/'
@@ -38,6 +42,10 @@ const Login = () => {
             })
     }
     return (
+       <>
+       {/* <Helmet>
+            <title>honest news login page</title>
+       </Helmet> */}
         <Form onSubmit={handleLogin}>
             <Form.Group className="mb-3" controlId="formBasicEmail">
                 <Form.Label>Email address</Form.Label>
@@ -58,6 +66,7 @@ const Login = () => {
                 Login
             </Button>
         </Form>
+       </>
     );
 }
 

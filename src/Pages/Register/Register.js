@@ -1,8 +1,10 @@
 import React, { useContext, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import { Helmet } from 'react-helmet';
 import toast from 'react-hot-toast';
 import { AuthContext } from '../../context/UserContext/UserContext';
+import useTitle from '../../hooks/useTitle';
 const Register = () => {
     const [acceptedTerms, setAcceptedTerms] = useState(false)
     const { createUser, GetName,verifyEmail } = useContext(AuthContext)
@@ -57,7 +59,15 @@ const Register = () => {
         }
     }
 
+    //change title 
+    useTitle('Register')
+
     return (
+        <>
+        {/* <Helmet>
+            <title>register page of the honest news</title>
+        </Helmet> */}
+        
         <Form onSubmit={handleRegister}>
             <Form.Group className="mb-3" controlId="formBasicEmail">
                 <Form.Label>Your Name</Form.Label>
@@ -93,6 +103,7 @@ const Register = () => {
                 Register
             </Button>
         </Form>
+        </>
     );
 }
 
